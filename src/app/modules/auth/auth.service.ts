@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   IChangePassword,
   IForgetPassword,
@@ -14,6 +15,7 @@ import { jwtHelpers } from "../../../helpers/jwtHelpers";
 import { sendEmail } from "../../../shared/mailNotification";
 import config, { ADMIN_EMAIL, NEXT_CLIENT_URL } from "../../../config";
 import { User } from "../user/user.model";
+import { Mentor } from "../mentor/mentor.model";
 
 const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   const { userName, password } = payload;
@@ -37,9 +39,22 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   const { role, needsPasswordChange, userDetails, isVerified } = isUserExist;
 
   const id = user?._id;
+  const accessTokenData: Record<string, any> = {
+    userName,
+    role,
+    userDetails: id,
+    isVerified,
+  };
+  if (role === "mentor") {
+    const mentor = await Mentor.findOne({ userName: userName }).select(
+      "+adminApproval"
+    );
+
+    accessTokenData.adminApproval = mentor.adminApproval;
+  }
 
   const accessToken = jwtHelpers.createToken(
-    { userName, role, userDetails: id, isVerified },
+    accessTokenData,
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
   );
