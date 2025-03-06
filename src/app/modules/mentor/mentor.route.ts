@@ -21,7 +21,7 @@ router.get(
 );
 router.delete(
   "/:id",
-  auth(ENUM_USER_ROLE.SUPER_ADMIN),
+  // auth(ENUM_USER_ROLE.SUPER_ADMIN),
   MentorController.deleteMentor
 );
 

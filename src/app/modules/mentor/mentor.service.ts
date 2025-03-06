@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
-import mongoose, { SortOrder } from "mongoose";
+import mongoose, { SortOrder, Types } from "mongoose";
 
 import ApiError from "../../../errors/ApiError";
 import { paginationHelpers } from "../../../helpers/paginationHelper";
@@ -133,7 +133,8 @@ const updateMentorSchedule = async (
 
 const deleteMentor = async (id: string): Promise<IMentor | null> => {
   // check if the student is exist
-  const isExist = await Mentor.findOne({ id });
+
+  const isExist = await Mentor.findById(id);
 
   if (!isExist) {
     throw new ApiError(httpStatus.NOT_FOUND, "Mentor not found !");
@@ -144,12 +145,18 @@ const deleteMentor = async (id: string): Promise<IMentor | null> => {
   try {
     session.startTransaction();
     //delete student first
-    const student = await Mentor.findOneAndDelete({ id }, { session });
+    const student = await Mentor.findOneAndDelete(
+      { _id: new Types.ObjectId(id) },
+      { session }
+    );
+
+    console.log({ student });
     if (!student) {
       throw new ApiError(404, "Failed to delete student");
     }
     //delete user
-    await User.deleteOne({ id });
+
+    await User.deleteOne({ userName: isExist.userName }, { session });
     session.commitTransaction();
     session.endSession();
 
