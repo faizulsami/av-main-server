@@ -47,10 +47,10 @@ const moduleRoutes = [
     path: "/categories",
     route: CategoriesRoutes,
   },
-  {
-    path: "/file-upload",
-    route: FileUploadRoutes,
-  },
+  // {
+  //   path: "/file-upload",
+  //   route: FileUploadRoutes,
+  // },
   {
     path: "/notifications",
     route: NotificationRoutes,
