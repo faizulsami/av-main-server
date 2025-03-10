@@ -2,10 +2,9 @@
 import { Server } from "http";
 import mongoose from "mongoose";
 
-import config from "./config/index";
-import { errorlogger, logger } from "./shared/logger";
-import { initializeSocket } from "./sockets/socket";
 import app from "./app";
+import config from "./config/index";
+import { initializeSocket } from "./sockets/socket";
 
 process.on("uncaughtException", (error) => {
   // errorlogger.error(error);

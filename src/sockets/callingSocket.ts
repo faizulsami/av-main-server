@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Socket, Server } from "socket.io";
 
-let online_users: { name: string; socket_id: string }[] = [];
-
 export interface CallInvitation {
   // caller: string;
   // callee: string;
@@ -12,11 +10,23 @@ export interface CallInvitation {
   type: "video" | "audio";
 }
 
-export const socketCallHandler = async (socket: Socket, io: Server) => {
+interface SocketCallHandler {
+  socket: Socket;
+  io: Server;
+  online_users: { name: string; socket_id: string }[];
+}
+export const socketCallHandler = async ({
+  socket,
+  io,
+  online_users,
+}: SocketCallHandler) => {
   socket.emit("me", socket.id);
 
   // call:invite
+  console.log("hmm", socket.id);
+
   socket.on("join", (user: { fromUsername: string }) => {
+    console.log("this is also me why");
     socket.join(user.fromUsername);
 
     const exists_user = online_users.find((u) => u.name === user.fromUsername);
@@ -29,11 +39,12 @@ export const socketCallHandler = async (socket: Socket, io: Server) => {
   socket.on("call:invite", (invitation: CallInvitation) => {
     console.log({ name: invitation.from });
     const online_user = online_users.find((u) => u.name === invitation.from);
+    console.log({ online_users });
     if (online_user) {
       io.to(online_user.socket_id).emit("call:invite", {
-        signal: data.signal,
-        from: data.from,
-        name: data.name,
+        from: invitation.from,
+        roomId: invitation.roomId,
+        to: online_user.name,
       });
     }
   });
@@ -41,10 +52,4 @@ export const socketCallHandler = async (socket: Socket, io: Server) => {
   socket.on("accept_call", (data: { signal: any; to: string; me: string }) => {
     io.to(data.to).emit("call_accepted", { signal: data.signal, me: data.me });
   });
-
-  socket.on("disconnect", () => {
-    online_users = online_users.filter((u) => u.socket_id !== socket.id);
-  });
-
-  console.log(online_users);
 };

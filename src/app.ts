@@ -22,19 +22,12 @@ const corsOptions = {
     "https://anonymousvoicesav.vercel.app",
   ],
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  methods: "GET,PUT,PATCH,POST,DELETE,OPTIONS",
+  // methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
-
-app.options("*", (req, res) => {
-  res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.sendStatus(204); // No Content
-});
 
 app.use(cookieParser("secret"));
 

@@ -9,13 +9,13 @@ import { logger } from "../shared/logger";
 import { socketCallHandler } from "./callingSocket";
 
 let io: SocketIOServer;
+let online_users: { name: string; socket_id: string }[] = [];
 
 const initializeSocket = (server: HTTPServer) => {
   io = new SocketIOServer(server, {
     pingTimeout: 60000,
     cors: {
       origin: "*", // Adjust this according to your CORS policy
-      methods: ["GET", "POST"],
       credentials: true,
     },
   });
@@ -27,11 +27,40 @@ const initializeSocket = (server: HTTPServer) => {
     next();
   });
 
-  io.on("connection", (socket: Socket) => {
+  io.on("connection", async (socket: Socket) => {
     console.log("User connected:", socket.id);
     logger.info(`Socket connected: ${socket.id}`);
 
-    socketCallHandler(socket, io);
+    //#region calling
+
+    socket.on("join", (user: { fromUsername: string }) => {
+      console.log("this is also me why");
+      socket.join(user.fromUsername);
+
+      const exists_user = online_users.find(
+        (u) => u.name === user.fromUsername
+      );
+      if (exists_user) exists_user.socket_id = socket.id;
+      else online_users.push({ name: user.fromUsername, socket_id: socket.id });
+
+      // io.emit("online_users", online_users);
+      console.log({ online_users });
+    });
+
+    socket.on("call:invite", (invitation: CallInvitation) => {
+      console.log({ name: invitation.from });
+      const online_user = online_users.find((u) => u.name === invitation.to);
+      console.log({ online_users });
+      if (online_user) {
+        io.to(online_user.socket_id).emit("call:invite", {
+          from: invitation.from,
+          roomId: invitation.roomId,
+          to: online_user.name,
+        });
+      }
+    });
+
+    //#endregion
 
     // Private message event handler
     socket.on("private message", (data: { to: string; message: any }) => {
@@ -91,7 +120,7 @@ const initializeSocket = (server: HTTPServer) => {
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);
       logger.info(`Socket disconnected: ${socket.id}`);
-
+      online_users = online_users.filter((u) => u.socket_id !== socket.id);
       // Update user list after disconnection
       updateUserList();
     });
