@@ -150,7 +150,6 @@ const deleteMentor = async (id: string): Promise<IMentor | null> => {
       { session }
     );
 
-    console.log({ student });
     if (!student) {
       throw new ApiError(404, "Failed to delete student");
     }

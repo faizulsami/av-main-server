@@ -8,7 +8,7 @@ import { initializeSocket } from "./sockets/socket";
 import app from "./app";
 
 process.on("uncaughtException", (error) => {
-  errorlogger.error(error);
+  // errorlogger.error(error);
   process.exit(1);
 });
 
@@ -29,13 +29,13 @@ async function bootstrap() {
     // Initialize Socket.IO
     initializeSocket(server);
   } catch (err) {
-    errorlogger.error("Failed to connect database", err);
+    // errorlogger.error("Failed to connect database", err);
   }
 
   process.on("unhandledRejection", (error) => {
     if (server) {
       server.close(() => {
-        errorlogger.error(error);
+        // errorlogger.error(error);
         process.exit(1);
       });
     } else {
@@ -47,7 +47,7 @@ async function bootstrap() {
 bootstrap();
 
 process.on("SIGTERM", () => {
-  logger.info("SIGTERM is received");
+  // logger.info("SIGTERM is received");
   if (server) {
     server.close();
   }

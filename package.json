@@ -2,9 +2,10 @@
   "name": "anonymous-voice-server",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.ts",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "lint:check": "eslint --ignore-path .eslintignore --ext .js,.ts .",
     "lint:fix": "eslint . --fix",

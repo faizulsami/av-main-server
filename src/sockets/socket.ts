@@ -1,12 +1,18 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// @ts-nocheck
+
 import { Server as HTTPServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 
 import { logger } from "../shared/logger";
+import { socketCallHandler } from "./callingSocket";
 
 let io: SocketIOServer;
 
 const initializeSocket = (server: HTTPServer) => {
   io = new SocketIOServer(server, {
+    pingTimeout: 60000,
     cors: {
       origin: "*", // Adjust this according to your CORS policy
       methods: ["GET", "POST"],
@@ -24,6 +30,8 @@ const initializeSocket = (server: HTTPServer) => {
   io.on("connection", (socket: Socket) => {
     console.log("User connected:", socket.id);
     logger.info(`Socket connected: ${socket.id}`);
+
+    socketCallHandler(socket, io);
 
     // Private message event handler
     socket.on("private message", (data: { to: string; message: any }) => {

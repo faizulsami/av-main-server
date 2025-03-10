@@ -7,7 +7,6 @@ import { UserController } from "./user.controller";
 import { UserValidation } from "./user.validation";
 
 import "./user.swagger";
-const path = require("path");
 
 const router = express.Router();
 router.post(

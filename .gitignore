@@ -14,7 +14,7 @@ jspm_packages/
 
 # TypeScript
 *.tsbuildinfo
-dist/
+
 
 # Environment variables
 .env
@@ -37,3 +37,4 @@ Thumbs.db
 
 # Tests
 coverage/
+.vercel
