@@ -13,9 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
+const app_1 = __importDefault(require("./app"));
 const index_1 = __importDefault(require("./config/index"));
 const socket_1 = require("./sockets/socket");
-const app_1 = __importDefault(require("./app"));
 process.on("uncaughtException", (error) => {
     // errorlogger.error(error);
     process.exit(1);

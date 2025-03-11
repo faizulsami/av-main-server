@@ -35,8 +35,11 @@ export const socketCallHandler = async ({
 
     // io.emit("online_users", online_users);
   });
-
-  socket.on("call:invite", (invitation: CallInvitation) => {
+  interface CallInvitationExtends extends CallInvitation {
+    fromId: string;
+    toId: string;
+  }
+  socket.on("call:invite", (invitation: CallInvitationExtends) => {
     console.log({ name: invitation.from });
     const online_user = online_users.find((u) => u.name === invitation.from);
     console.log({ online_users });

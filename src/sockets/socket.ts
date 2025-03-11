@@ -6,7 +6,6 @@ import { Server as HTTPServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 
 import { logger } from "../shared/logger";
-import { socketCallHandler } from "./callingSocket";
 
 let io: SocketIOServer;
 let online_users: { name: string; socket_id: string }[] = [];
@@ -47,18 +46,41 @@ const initializeSocket = (server: HTTPServer) => {
       console.log({ online_users });
     });
 
-    socket.on("call:invite", (invitation: CallInvitation) => {
-      console.log({ name: invitation.from });
-      const online_user = online_users.find((u) => u.name === invitation.to);
-      console.log({ online_users });
-      if (online_user) {
-        io.to(online_user.socket_id).emit("call:invite", {
-          from: invitation.from,
-          roomId: invitation.roomId,
-          to: online_user.name,
+    socket.on(
+      "call:invite",
+      (invitation: {
+        signal: any;
+        receiverUsername: string;
+        callerSocketId: string;
+      }) => {
+        const online_user = online_users.find(
+          (u) => u.name === invitation.receiverUsername
+        );
+        console.log({ online_users });
+        if (online_user) {
+          io.to(online_user.socket_id).emit("call:invite", {
+            signal: invitation.signal,
+            receiverSocketId: online_user.socket_id,
+            callerSocketId: invitation.callerSocketId,
+          });
+        }
+      }
+    );
+
+    socket.on(
+      "call:accept",
+      (data: {
+        receiverSocketId: string;
+        callerSocketId: string;
+        signal: any;
+      }) => {
+        console.log("call:accept");
+        socket.emit("call:accept", {
+          signal: data.signal,
+          callerSocketId: data.callerSocketId,
         });
       }
-    });
+    );
 
     //#endregion
 
