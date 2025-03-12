@@ -55,6 +55,7 @@ const initializeSocket = (server) => {
                     signal: invitation.signal,
                     receiverSocketId: online_user.socket_id,
                     callerSocketId: invitation.callerSocketId,
+                    callerUsername: invitation.callerUsername,
                 });
             }
         });
@@ -63,6 +64,19 @@ const initializeSocket = (server) => {
             io.to(data.receiverSocketId).emit("call:accept", {
                 signal: data.signal,
                 callerSocketId: data.callerSocketId,
+            });
+        });
+        // call:rejected
+        socket.on("call:rejected", (data) => {
+            console.log("call:rejected");
+            io.to(data.callerSocketId).emit("call:rejected", {
+                receiverUsername: data.receiverUsername,
+            });
+        });
+        socket.on("call:ended", (data) => {
+            console.log("call:ended");
+            io.to(data.callerSocketId).emit("call:ended", {
+                callEndedUsername: data.callEndedUsername,
             });
         });
         //#endregion
@@ -117,6 +131,9 @@ const initializeSocket = (server) => {
             console.log("User disconnected:", socket.id);
             logger_1.logger.info(`Socket disconnected: ${socket.id}`);
             online_users = online_users.filter((u) => u.socket_id !== socket.id);
+            socket.broadcast.emit("user:disconnected", {
+                disconnectedSocketId: socket.id,
+            });
             // Update user list after disconnection
             updateUserList();
         });

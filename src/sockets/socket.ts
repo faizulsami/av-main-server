@@ -52,6 +52,7 @@ const initializeSocket = (server: HTTPServer) => {
       (invitation: {
         signal: any;
         receiverUsername: string;
+        callerUsername: string;
         callerSocketId: string;
       }) => {
         const online_user = online_users.find(
@@ -63,6 +64,7 @@ const initializeSocket = (server: HTTPServer) => {
             signal: invitation.signal,
             receiverSocketId: online_user.socket_id,
             callerSocketId: invitation.callerSocketId,
+            callerUsername: invitation.callerUsername,
           });
         }
       }
@@ -79,6 +81,28 @@ const initializeSocket = (server: HTTPServer) => {
         io.to(data.receiverSocketId).emit("call:accept", {
           signal: data.signal,
           callerSocketId: data.callerSocketId,
+        });
+      }
+    );
+
+    // call:rejected
+
+    socket.on(
+      "call:rejected",
+      (data: { receiverUsername: string; callerSocketId: string }) => {
+        console.log("call:rejected");
+        io.to(data.callerSocketId).emit("call:rejected", {
+          receiverUsername: data.receiverUsername,
+        });
+      }
+    );
+
+    socket.on(
+      "call:ended",
+      (data: { callEndedUsername: string; callerSocketId: string }) => {
+        console.log("call:ended");
+        io.to(data.callerSocketId).emit("call:ended", {
+          callEndedUsername: data.callEndedUsername,
         });
       }
     );
@@ -144,6 +168,11 @@ const initializeSocket = (server: HTTPServer) => {
       console.log("User disconnected:", socket.id);
       logger.info(`Socket disconnected: ${socket.id}`);
       online_users = online_users.filter((u) => u.socket_id !== socket.id);
+
+      socket.broadcast.emit("user:disconnected", {
+        disconnectedSocketId: socket.id,
+      });
+
       // Update user list after disconnection
       updateUserList();
     });
