@@ -76,7 +76,7 @@ const initializeSocket = (server: HTTPServer) => {
         signal: any;
       }) => {
         console.log("call:accept");
-        socket.emit("call:accept", {
+        io.to(data.receiverSocketId).emit("call:accept", {
           signal: data.signal,
           callerSocketId: data.callerSocketId,
         });

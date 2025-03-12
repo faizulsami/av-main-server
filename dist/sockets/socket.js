@@ -60,7 +60,7 @@ const initializeSocket = (server) => {
         });
         socket.on("call:accept", (data) => {
             console.log("call:accept");
-            socket.emit("call:accept", {
+            io.to(data.receiverSocketId).emit("call:accept", {
                 signal: data.signal,
                 callerSocketId: data.callerSocketId,
             });
