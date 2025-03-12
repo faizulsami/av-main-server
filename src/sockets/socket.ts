@@ -31,6 +31,7 @@ const initializeSocket = (server: HTTPServer) => {
     logger.info(`Socket connected: ${socket.id}`);
 
     //#region calling
+    socket.emit("me", socket.id);
 
     socket.on("join", (user: { fromUsername: string }) => {
       console.log("this is also me why");

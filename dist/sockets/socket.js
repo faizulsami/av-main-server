@@ -35,6 +35,7 @@ const initializeSocket = (server) => {
         console.log("User connected:", socket.id);
         logger_1.logger.info(`Socket connected: ${socket.id}`);
         //#region calling
+        socket.emit("me", socket.id);
         socket.on("join", (user) => {
             console.log("this is also me why");
             socket.join(user.fromUsername);
