@@ -27,29 +27,23 @@ const initializeSocket = (server) => {
     });
     io.use((socket, next) => {
         const username = socket.handshake.auth.username;
-        console.log(" From Use Username:", username);
         socket.username = username;
         next();
     });
     io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("User connected:", socket.id);
         logger_1.logger.info(`Socket connected: ${socket.id}`);
         //#region calling
         socket.emit("me", socket.id);
         socket.on("join", (user) => {
-            console.log("this is also me why");
             socket.join(user.fromUsername);
             const exists_user = online_users.find((u) => u.name === user.fromUsername);
             if (exists_user)
                 exists_user.socket_id = socket.id;
             else
                 online_users.push({ name: user.fromUsername, socket_id: socket.id });
-            // io.emit("online_users", online_users);
-            console.log({ online_users });
         });
         socket.on("call:invite", (invitation) => {
             const online_user = online_users.find((u) => u.name === invitation.receiverUsername);
-            console.log({ online_users });
             if (online_user) {
                 io.to(online_user.socket_id).emit("call:invite", {
                     signal: invitation.signal,
@@ -60,7 +54,6 @@ const initializeSocket = (server) => {
             }
         });
         socket.on("call:accept", (data) => {
-            console.log("call:accept");
             io.to(data.receiverSocketId).emit("call:accept", {
                 signal: data.signal,
                 callerSocketId: data.callerSocketId,
@@ -68,13 +61,11 @@ const initializeSocket = (server) => {
         });
         // call:rejected
         socket.on("call:rejected", (data) => {
-            console.log("call:rejected");
             io.to(data.callerSocketId).emit("call:rejected", {
                 receiverUsername: data.receiverUsername,
             });
         });
         socket.on("call:ended", (data) => {
-            console.log("call:ended");
             io.to(data.callerSocketId).emit("call:ended", {
                 callEndedUsername: data.callEndedUsername,
             });
@@ -82,7 +73,6 @@ const initializeSocket = (server) => {
         //#endregion
         // Private message event handler
         socket.on("private message", (data) => {
-            console.log("Private message:", data);
             // Find the target socket by username instead of socket ID
             const targetSocket = Array.from(io.sockets.sockets.values()).find((s) => s.username === data.to);
             if (targetSocket) {
@@ -117,7 +107,6 @@ const initializeSocket = (server) => {
                 });
             }
             io.emit("users", users);
-            console.log("Connected users:", users);
         };
         // Initial user list update
         updateUserList();
@@ -133,9 +122,14 @@ const initializeSocket = (server) => {
         socket.on("mentor-online", (data) => {
             socket.broadcast.emit("mentor-online", data);
         });
+        socket.on("appointment-completed", (data) => {
+            const user = online_users.find((u) => u.name === data.menteeUserName);
+            if (!user)
+                return;
+            console.log("user", user);
+            io.to(user.socket_id).emit("appointment-completed", data);
+        });
         socket.on("disconnect", () => {
-            console.log("User disconnected:", socket.id);
-            logger_1.logger.info(`Socket disconnected: ${socket.id}`);
             online_users = online_users.filter((u) => u.socket_id !== socket.id);
             socket.broadcast.emit("user:disconnected", {
                 disconnectedSocketId: socket.id,

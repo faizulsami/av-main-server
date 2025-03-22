@@ -21,20 +21,18 @@ const initializeSocket = (server: HTTPServer) => {
 
   io.use((socket, next) => {
     const username = socket.handshake.auth.username;
-    console.log(" From Use Username:", username);
+
     socket.username = username;
     next();
   });
 
   io.on("connection", async (socket: Socket) => {
-    console.log("User connected:", socket.id);
     logger.info(`Socket connected: ${socket.id}`);
 
     //#region calling
     socket.emit("me", socket.id);
 
     socket.on("join", (user: { fromUsername: string }) => {
-      console.log("this is also me why");
       socket.join(user.fromUsername);
 
       const exists_user = online_users.find(
@@ -42,9 +40,6 @@ const initializeSocket = (server: HTTPServer) => {
       );
       if (exists_user) exists_user.socket_id = socket.id;
       else online_users.push({ name: user.fromUsername, socket_id: socket.id });
-
-      // io.emit("online_users", online_users);
-      console.log({ online_users });
     });
 
     socket.on(
@@ -58,7 +53,7 @@ const initializeSocket = (server: HTTPServer) => {
         const online_user = online_users.find(
           (u) => u.name === invitation.receiverUsername
         );
-        console.log({ online_users });
+
         if (online_user) {
           io.to(online_user.socket_id).emit("call:invite", {
             signal: invitation.signal,
@@ -77,7 +72,6 @@ const initializeSocket = (server: HTTPServer) => {
         callerSocketId: string;
         signal: any;
       }) => {
-        console.log("call:accept");
         io.to(data.receiverSocketId).emit("call:accept", {
           signal: data.signal,
           callerSocketId: data.callerSocketId,
@@ -90,7 +84,6 @@ const initializeSocket = (server: HTTPServer) => {
     socket.on(
       "call:rejected",
       (data: { receiverUsername: string; callerSocketId: string }) => {
-        console.log("call:rejected");
         io.to(data.callerSocketId).emit("call:rejected", {
           receiverUsername: data.receiverUsername,
         });
@@ -100,7 +93,6 @@ const initializeSocket = (server: HTTPServer) => {
     socket.on(
       "call:ended",
       (data: { callEndedUsername: string; callerSocketId: string }) => {
-        console.log("call:ended");
         io.to(data.callerSocketId).emit("call:ended", {
           callEndedUsername: data.callEndedUsername,
         });
@@ -111,8 +103,6 @@ const initializeSocket = (server: HTTPServer) => {
 
     // Private message event handler
     socket.on("private message", (data: { to: string; message: any }) => {
-      console.log("Private message:", data);
-
       // Find the target socket by username instead of socket ID
       const targetSocket = Array.from(io.sockets.sockets.values()).find(
         (s) => s.username === data.to
@@ -151,7 +141,6 @@ const initializeSocket = (server: HTTPServer) => {
         });
       }
       io.emit("users", users);
-      console.log("Connected users:", users);
     };
 
     // Initial user list update
@@ -171,9 +160,14 @@ const initializeSocket = (server: HTTPServer) => {
       socket.broadcast.emit("mentor-online", data);
     });
 
+    socket.on("appointment-completed", (data: any) => {
+      const user = online_users.find((u) => u.name === data.menteeUserName);
+      if (!user) return;
+      console.log("user", user);
+      io.to(user.socket_id).emit("appointment-completed", data);
+    });
+
     socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
-      logger.info(`Socket disconnected: ${socket.id}`);
       online_users = online_users.filter((u) => u.socket_id !== socket.id);
 
       socket.broadcast.emit("user:disconnected", {
