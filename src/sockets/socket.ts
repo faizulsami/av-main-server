@@ -165,8 +165,10 @@ const initializeSocket = (server: HTTPServer) => {
     });
 
     socket.on("notification", (data: any) => {
-      console.log("new notification");
       socket.broadcast.emit("notification", { ...data, createdAt: new Date() });
+    });
+    socket.on("mentor-online", (data: any) => {
+      socket.broadcast.emit("mentor-online", data);
     });
 
     socket.on("disconnect", () => {

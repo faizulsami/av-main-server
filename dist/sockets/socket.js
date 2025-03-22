@@ -128,8 +128,10 @@ const initializeSocket = (server) => {
             self: false,
         });
         socket.on("notification", (data) => {
-            console.log("new notification");
             socket.broadcast.emit("notification", Object.assign(Object.assign({}, data), { createdAt: new Date() }));
+        });
+        socket.on("mentor-online", (data) => {
+            socket.broadcast.emit("mentor-online", data);
         });
         socket.on("disconnect", () => {
             console.log("User disconnected:", socket.id);
