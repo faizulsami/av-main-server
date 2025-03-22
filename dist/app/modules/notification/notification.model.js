@@ -7,6 +7,10 @@ const NotificationSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    listenerUsername: {
+        type: String,
+        default: null,
+    },
     type: {
         type: String,
     },

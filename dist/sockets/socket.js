@@ -117,7 +117,15 @@ const initializeSocket = (server) => {
             self: false,
         });
         socket.on("notification", (data) => {
-            socket.broadcast.emit("notification", Object.assign(Object.assign({}, data), { createdAt: new Date() }));
+            if (data === null || data === void 0 ? void 0 : data.receiver_username) {
+                const user = online_users.find((u) => u.name === data.receiver_username);
+                console.log(162, { receiver_username: data.receiver_username, user });
+                if (user) {
+                    io.to(user.socket_id).emit("notification", Object.assign(Object.assign({}, data), { createdAt: new Date() }));
+                }
+            }
+            else
+                socket.broadcast.emit("notification", Object.assign(Object.assign({}, data), { createdAt: new Date() }));
         });
         socket.on("mentor-online", (data) => {
             socket.broadcast.emit("mentor-online", data);
@@ -126,7 +134,6 @@ const initializeSocket = (server) => {
             const user = online_users.find((u) => u.name === data.menteeUserName);
             if (!user)
                 return;
-            console.log("user", user);
             io.to(user.socket_id).emit("appointment-completed", data);
         });
         socket.on("disconnect", () => {

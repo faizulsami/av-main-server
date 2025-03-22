@@ -154,7 +154,23 @@ const initializeSocket = (server: HTTPServer) => {
     });
 
     socket.on("notification", (data: any) => {
-      socket.broadcast.emit("notification", { ...data, createdAt: new Date() });
+      if (data?.receiver_username) {
+        const user = online_users.find(
+          (u) => u.name === data.receiver_username
+        );
+
+        console.log(162, { receiver_username: data.receiver_username, user });
+        if (user) {
+          io.to(user.socket_id).emit("notification", {
+            ...data,
+            createdAt: new Date(),
+          });
+        }
+      } else
+        socket.broadcast.emit("notification", {
+          ...data,
+          createdAt: new Date(),
+        });
     });
     socket.on("mentor-online", (data: any) => {
       socket.broadcast.emit("mentor-online", data);
@@ -163,7 +179,7 @@ const initializeSocket = (server: HTTPServer) => {
     socket.on("appointment-completed", (data: any) => {
       const user = online_users.find((u) => u.name === data.menteeUserName);
       if (!user) return;
-      console.log("user", user);
+
       io.to(user.socket_id).emit("appointment-completed", data);
     });
 

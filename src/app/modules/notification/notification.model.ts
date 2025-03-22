@@ -8,6 +8,10 @@ const NotificationSchema = new Schema<INotification, NotificationModel>(
       type: String,
       required: true,
     },
+    listenerUsername: {
+      type: String,
+      default: null,
+    },
     type: {
       type: String,
     },

@@ -37,7 +37,7 @@ const createNotification = (0, catchAsync_1.default)((req, res) => __awaiter(voi
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Your Message Posted successfully',
+        message: "Your Message Posted successfully",
         data: result,
     });
 }));
@@ -47,18 +47,19 @@ const getSingleNotification = (0, catchAsync_1.default)((req, res) => __awaiter(
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Notification fetched successfully',
+        message: "Notification fetched successfully",
         data: result,
     });
 }));
 const getAllNotification = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const filters = (0, pick_1.default)(req.query, messaging_constants_1.messagingFilterableFields);
     const paginationOptions = (0, pick_1.default)(req.query, pagination_1.paginationFields);
+    console.log({ filters });
     const result = yield notification_service_1.NotificationService.getAllNotification(filters, paginationOptions);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Notification fetched successfully',
+        message: "Notification fetched successfully",
         meta: result.meta,
         data: result.data,
     });
@@ -71,7 +72,7 @@ const updateNotificationSeenStatus = (0, catchAsync_1.default)((0, catchAsync_1.
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Notification seen successfully',
+        message: "Notification seen successfully",
         data: result,
     });
 })));
@@ -89,5 +90,5 @@ exports.NotificationController = {
     createNotification,
     getAllNotification,
     getSingleNotification,
-    updateNotificationSeenStatus
+    updateNotificationSeenStatus,
 };
