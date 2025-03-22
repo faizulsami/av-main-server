@@ -127,6 +127,10 @@ const initializeSocket = (server) => {
             key: socket.id,
             self: false,
         });
+        socket.on("notification", (data) => {
+            console.log("new notification");
+            socket.broadcast.emit("notification", Object.assign(Object.assign({}, data), { createdAt: new Date() }));
+        });
         socket.on("disconnect", () => {
             console.log("User disconnected:", socket.id);
             logger_1.logger.info(`Socket disconnected: ${socket.id}`);

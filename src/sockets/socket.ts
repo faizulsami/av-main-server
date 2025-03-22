@@ -164,6 +164,11 @@ const initializeSocket = (server: HTTPServer) => {
       self: false,
     });
 
+    socket.on("notification", (data: any) => {
+      console.log("new notification");
+      socket.broadcast.emit("notification", { ...data, createdAt: new Date() });
+    });
+
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);
       logger.info(`Socket disconnected: ${socket.id}`);

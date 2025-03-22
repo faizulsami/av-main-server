@@ -24,6 +24,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppointmentService = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const mongoose_1 = __importDefault(require("mongoose"));
 const paginationHelper_1 = require("../../../helpers/paginationHelper");
 const appointments_model_1 = require("./appointments.model");
