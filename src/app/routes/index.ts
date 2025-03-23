@@ -10,6 +10,7 @@ import { MessagingRoutes } from "../modules/messaging/messaging.route";
 import { NotificationRoutes } from "../modules/notification/notification.route";
 import { UserRoutes } from "../modules/user/user.route";
 import { UserDetailsRoutes } from "../modules/userDetails/userDetails.route";
+import { CommunityRoutes } from "../modules/community/community.route";
 
 const router = express.Router();
 
@@ -54,6 +55,10 @@ const moduleRoutes = [
   {
     path: "/notifications",
     route: NotificationRoutes,
+  },
+  {
+    path: "/community",
+    route: CommunityRoutes,
   },
 ];
 

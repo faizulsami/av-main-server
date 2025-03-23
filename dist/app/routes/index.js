@@ -13,6 +13,7 @@ const messaging_route_1 = require("../modules/messaging/messaging.route");
 const notification_route_1 = require("../modules/notification/notification.route");
 const user_route_1 = require("../modules/user/user.route");
 const userDetails_route_1 = require("../modules/userDetails/userDetails.route");
+const community_route_1 = require("../modules/community/community.route");
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -54,6 +55,10 @@ const moduleRoutes = [
     {
         path: "/notifications",
         route: notification_route_1.NotificationRoutes,
+    },
+    {
+        path: "/community",
+        route: community_route_1.CommunityRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
