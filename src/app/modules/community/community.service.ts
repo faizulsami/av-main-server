@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import mongoose, { SortOrder } from "mongoose";
+import mongoose, { SortOrder, Types } from "mongoose";
 
 import { paginationHelpers } from "../../../helpers/paginationHelper";
 import { IGenericResponse } from "../../../interfaces/common";
@@ -52,14 +52,24 @@ const createCommunityPostComment = async (
     throw error;
   }
 };
-const addVote = async (postId: string) => {
+const addVote = async (postId: string, type: "inc" | "dec") => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
+    let updatedPost;
 
-    const updatedPost = await Community.findByIdAndUpdate(postId, {
-      $inc: { votes: 1 },
-    });
+    if (type === "inc") {
+      updatedPost = await Community.findByIdAndUpdate(postId, {
+        $inc: { votes: 1 },
+      });
+    } else {
+      updatedPost = await Community.findOneAndUpdate(
+        { _id: new Types.ObjectId(postId), votes: { $not: { $eq: 0 } } },
+        {
+          $inc: { votes: -1 },
+        }
+      );
+    }
 
     await session.commitTransaction();
     await session.endSession();

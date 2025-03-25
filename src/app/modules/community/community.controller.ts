@@ -52,7 +52,8 @@ const getCommunityPost = catchAsync(async (req: Request, res: Response) => {
 });
 const addVote = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await CommunityService.addVote(id);
+  const type = req.query?.type || "inc";
+  const result = await CommunityService.addVote(id, type);
 
   sendResponse<ICommunity>(res, {
     statusCode: httpStatus.OK,
