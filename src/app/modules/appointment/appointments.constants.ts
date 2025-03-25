@@ -3,6 +3,8 @@ export const appointmentFilterableFields = [
   "status",
   "appointmentType",
   "mentorUserName",
+  "menteeUserName",
+  "not",
 ];
 
 export const blogSearchableFields = ["title"];

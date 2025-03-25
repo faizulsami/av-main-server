@@ -48,16 +48,19 @@ const getSingleAppointment = (id) => __awaiter(void 0, void 0, void 0, function*
     return yield appointments_model_1.Appointment.findById(id);
 });
 const getAllAppointments = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const { searchTerm } = filters, filtersData = __rest(filters, ["searchTerm"]);
+    const { not, searchTerm } = filters, filtersData = __rest(filters, ["not", "searchTerm"]);
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
     const andConditions = [];
-    console.log("filtersData", filtersData);
     if (Object.keys(filtersData).length) {
         andConditions.push({
             $and: Object.entries(filtersData).map(([field, value]) => ({
                 [field]: value,
             })),
         });
+    }
+    if (not) {
+        console.log({ not });
+        andConditions.push({ appointmentType: { $not: { $eq: not } } });
     }
     // Dynamic sort needs  fields to  do sorting
     const sortConditions = {};

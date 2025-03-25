@@ -35,14 +35,12 @@ const getAllAppointments = async (
   filters: IAppointmentFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<IAppointment[]>> => {
-  const { searchTerm, ...filtersData } = filters;
+  const { not, searchTerm, ...filtersData } = filters;
 
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
   const andConditions: any = [];
-
-  console.log("filtersData", filtersData);
 
   if (Object.keys(filtersData).length) {
     andConditions.push({
@@ -51,7 +49,11 @@ const getAllAppointments = async (
       })),
     });
   }
+  if (not) {
+    console.log({ not });
 
+    andConditions.push({ appointmentType: { $not: { $eq: not } } });
+  }
   // Dynamic sort needs  fields to  do sorting
   const sortConditions: { [key: string]: SortOrder } = {};
   if (sortBy && sortOrder) {

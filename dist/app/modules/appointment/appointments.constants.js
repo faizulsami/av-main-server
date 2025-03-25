@@ -6,5 +6,7 @@ exports.appointmentFilterableFields = [
     "status",
     "appointmentType",
     "mentorUserName",
+    "menteeUserName",
+    "not",
 ];
 exports.blogSearchableFields = ["title"];
