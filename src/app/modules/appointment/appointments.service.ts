@@ -7,7 +7,7 @@ import { IGenericResponse } from "../../../interfaces/common";
 import { IPaginationOptions } from "../../../interfaces/pagination";
 import { IAppointment, IAppointmentFilters } from "./appointments.interfaces";
 import { Appointment } from "./appointments.model";
-
+import moment from "moment";
 const createAppointment = async (payload: IAppointment) => {
   const session = await mongoose.startSession();
   try {
@@ -50,9 +50,26 @@ const getAllAppointments = async (
     });
   }
   if (not) {
-    console.log({ not });
+    if (not === "completed") {
+      const today = moment().utc();
+      const dayOfWeek = today.isoWeekday();
 
-    andConditions.push({ appointmentType: { $not: { $eq: not } } });
+      const startOfWeek = today
+        .clone()
+        .subtract(dayOfWeek % 7, "days")
+        .startOf("day");
+
+      const endOfToday = today.clone().endOf("day");
+      andConditions.push({ status: { $not: { $eq: not } } });
+      andConditions.push({
+        createdAt: {
+          $gte: startOfWeek,
+          $lte: endOfToday,
+        },
+      });
+    } else {
+      andConditions.push({ appointmentType: { $not: { $eq: not } } });
+    }
   }
   // Dynamic sort needs  fields to  do sorting
   const sortConditions: { [key: string]: SortOrder } = {};

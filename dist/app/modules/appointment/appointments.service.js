@@ -29,6 +29,7 @@ exports.AppointmentService = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const paginationHelper_1 = require("../../../helpers/paginationHelper");
 const appointments_model_1 = require("./appointments.model");
+const moment_1 = __importDefault(require("moment"));
 const createAppointment = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const session = yield mongoose_1.default.startSession();
     try {
@@ -59,8 +60,25 @@ const getAllAppointments = (filters, paginationOptions) => __awaiter(void 0, voi
         });
     }
     if (not) {
-        console.log({ not });
-        andConditions.push({ appointmentType: { $not: { $eq: not } } });
+        if (not === "completed") {
+            const today = (0, moment_1.default)().utc();
+            const dayOfWeek = today.isoWeekday();
+            const startOfWeek = today
+                .clone()
+                .subtract(dayOfWeek % 7, "days")
+                .startOf("day");
+            const endOfToday = today.clone().endOf("day");
+            andConditions.push({ status: { $not: { $eq: not } } });
+            andConditions.push({
+                createdAt: {
+                    $gte: startOfWeek,
+                    $lte: endOfToday,
+                },
+            });
+        }
+        else {
+            andConditions.push({ appointmentType: { $not: { $eq: not } } });
+        }
     }
     // Dynamic sort needs  fields to  do sorting
     const sortConditions = {};
