@@ -34,3 +34,5 @@ router.get("/",
 // ),
 mentor_controller_1.MentorController.getAllMentors);
 exports.MentorRoutes = router;
+// git remote set-url origin https://github.com/AbtahiHasan/anonymous-voice-client.git
+// git remote set-url origin https://github.com/AbtahiHasan/anonymous-voice-server.git

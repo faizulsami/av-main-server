@@ -13,6 +13,7 @@ import swaggerDocument from "../openapi.json";
 const app: Application = express();
 
 // CORS configuration
+
 const corsOptions = {
   origin: [
     "https://anonymousvoicesav.com",
@@ -22,12 +23,31 @@ const corsOptions = {
     "https://anonymousvoicesav.vercel.app",
   ],
   credentials: true,
-  methods: "GET,PUT,PATCH,POST,DELETE,OPTIONS",
-  // methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
-app.options("*", cors(corsOptions));
+
+// ✅ Enable CORS before any routes
 app.use(cors(corsOptions));
+
+// ✅ Handle Preflight (OPTIONS) Requests
+app.options("*", cors(corsOptions));
+
+app.use((req, res, next) => {
+  if (corsOptions.origin.includes(req.headers.origin as string)) {
+    res.header("Access-Control-Allow-Origin", req.headers.origin);
+  }
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, PUT, PATCH, POST, DELETE, OPTIONS"
+  );
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204); // No content response for preflight
+  }
+  next();
+});
 
 app.use(cookieParser("secret"));
 

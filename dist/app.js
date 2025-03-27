@@ -24,12 +24,24 @@ const corsOptions = {
         "https://anonymousvoicesav.vercel.app",
     ],
     credentials: true,
-    methods: "GET,PUT,PATCH,POST,DELETE,OPTIONS",
-    // methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 };
-app.options("*", (0, cors_1.default)(corsOptions));
+// ✅ Enable CORS before any routes
 app.use((0, cors_1.default)(corsOptions));
+// ✅ Handle Preflight (OPTIONS) Requests
+app.options("*", (0, cors_1.default)(corsOptions));
+app.use((req, res, next) => {
+    if (corsOptions.origin.includes(req.headers.origin)) {
+        res.header("Access-Control-Allow-Origin", req.headers.origin);
+    }
+    res.header("Access-Control-Allow-Methods", "GET, PUT, PATCH, POST, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    if (req.method === "OPTIONS") {
+        return res.sendStatus(204); // No content response for preflight
+    }
+    next();
+});
 app.use((0, cookie_parser_1.default)("secret"));
 const specs = (0, swagger_jsdoc_1.default)(swagger_1.default);
 app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(openapi_json_1.default, specs));

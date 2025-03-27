@@ -17,9 +17,7 @@ const app_1 = __importDefault(require("./app"));
 const index_1 = __importDefault(require("./config/index"));
 const socket_1 = require("./sockets/socket");
 process.on("uncaughtException", (error) => {
-    // errorlogger.error(error);
-    console.log("error 1", error);
-    // process.exit(1);
+    process.exit(1);
 });
 let server;
 function bootstrap() {
@@ -38,24 +36,22 @@ function bootstrap() {
             (0, socket_1.initializeSocket)(server);
         }
         catch (err) {
-            console.log("error 31", err);
             // errorlogger.error("Failed to connect database", err);
         }
-        // process.on("unhandledRejection", (error) => {
-        //   if (server) {
-        //     server.close(() => {
-        //       // errorlogger.error(error);
-        //       process.exit(1);
-        //     });
-        //   } else {
-        //     process.exit(1);
-        //   }
-        // });
+        process.on("unhandledRejection", (error) => {
+            if (server) {
+                server.close(() => {
+                    process.exit(1);
+                });
+            }
+            else {
+                process.exit(1);
+            }
+        });
     });
 }
 bootstrap();
 process.on("SIGTERM", () => {
-    logger.info("SIGTERM is received");
     if (server) {
         server.close();
     }
