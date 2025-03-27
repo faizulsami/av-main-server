@@ -19,6 +19,11 @@ router.get(
   // ),
   MentorController.getSingleMentor
 );
+router.patch(
+  "/:id/reject",
+  // auth(ENUM_USER_ROLE.SUPER_ADMIN),
+  MentorController.rejectMentor
+);
 router.delete(
   "/:id",
   // auth(ENUM_USER_ROLE.SUPER_ADMIN),

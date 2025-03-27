@@ -60,6 +60,18 @@ const updateMentorSchedule = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const rejectMentor = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  const result = await MentorService.rejectMentor(id);
+
+  sendResponse<IMentor>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Mentor rejected successfully !",
+    data: result,
+  });
+});
 const deleteMentor = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
 
@@ -78,5 +90,6 @@ export const MentorController = {
   getAllMentors,
   updateMentor,
   updateMentorSchedule,
+  rejectMentor,
   deleteMentor,
 };

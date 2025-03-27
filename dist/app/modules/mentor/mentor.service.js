@@ -140,29 +140,30 @@ const updateMentorSchedule = (payload) => __awaiter(void 0, void 0, void 0, func
     });
     return result;
 });
+const rejectMentor = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const mentor = yield mentor_model_1.Mentor.findByIdAndDelete(id);
+    return mentor;
+});
 const deleteMentor = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    // check if the student is exist
-    const isExist = yield mentor_model_1.Mentor.findById(id);
-    if (!isExist) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "Mentor not found !");
-    }
     const session = yield mongoose_1.default.startSession();
     try {
         session.startTransaction();
-        //delete student first
-        const student = yield mentor_model_1.Mentor.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) }, { session });
-        if (!student) {
-            throw new ApiError_1.default(404, "Failed to delete student");
+        // Delete mentor first
+        const mentor = yield mentor_model_1.Mentor.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) }, { session });
+        if (!mentor) {
+            throw new ApiError_1.default(400, "Failed to delete mentor");
         }
-        //delete user
-        yield user_model_1.User.deleteOne({ userName: isExist.userName }, { session });
-        session.commitTransaction();
-        session.endSession();
-        return student;
+        // Delete related user
+        yield user_model_1.User.deleteOne({ userName: mentor.userName }, { session });
+        yield session.commitTransaction();
+        return mentor;
     }
     catch (error) {
-        session.abortTransaction();
+        yield session.abortTransaction();
         throw error;
+    }
+    finally {
+        session.endSession();
     }
 });
 exports.MentorService = {
@@ -170,5 +171,6 @@ exports.MentorService = {
     getSingleMentor,
     updateMentor,
     updateMentorSchedule,
+    rejectMentor,
     deleteMentor,
 };

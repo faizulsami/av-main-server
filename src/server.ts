@@ -7,7 +7,6 @@ import config from "./config/index";
 import { initializeSocket } from "./sockets/socket";
 
 process.on("uncaughtException", (error) => {
-  // errorlogger.error(error);
   process.exit(1);
 });
 
@@ -34,7 +33,6 @@ async function bootstrap() {
   process.on("unhandledRejection", (error) => {
     if (server) {
       server.close(() => {
-        // errorlogger.error(error);
         process.exit(1);
       });
     } else {
@@ -46,7 +44,6 @@ async function bootstrap() {
 bootstrap();
 
 process.on("SIGTERM", () => {
-  // logger.info("SIGTERM is received");
   if (server) {
     server.close();
   }

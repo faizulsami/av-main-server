@@ -64,6 +64,16 @@ const updateMentorSchedule = (0, catchAsync_1.default)((req, res) => __awaiter(v
         data: result,
     });
 }));
+const rejectMentor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    const result = yield mentor_service_1.MentorService.rejectMentor(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Mentor rejected successfully !",
+        data: result,
+    });
+}));
 const deleteMentor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const result = yield mentor_service_1.MentorService.deleteMentor(id);
@@ -79,5 +89,6 @@ exports.MentorController = {
     getAllMentors,
     updateMentor,
     updateMentorSchedule,
+    rejectMentor,
     deleteMentor,
 };

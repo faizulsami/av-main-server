@@ -131,38 +131,38 @@ const updateMentorSchedule = async (
   return result;
 };
 
+const rejectMentor = async (id: string): Promise<IMentor | null> => {
+  const mentor = await Mentor.findByIdAndDelete(id);
+
+  return mentor;
+};
+
 const deleteMentor = async (id: string): Promise<IMentor | null> => {
-  // check if the student is exist
-
-  const isExist = await Mentor.findById(id);
-
-  if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Mentor not found !");
-  }
-
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
-    //delete student first
-    const student = await Mentor.findOneAndDelete(
+
+    // Delete mentor first
+    const mentor = await Mentor.findOneAndDelete(
       { _id: new Types.ObjectId(id) },
       { session }
     );
 
-    if (!student) {
-      throw new ApiError(404, "Failed to delete student");
+    if (!mentor) {
+      throw new ApiError(400, "Failed to delete mentor");
     }
-    //delete user
 
-    await User.deleteOne({ userName: isExist.userName }, { session });
-    session.commitTransaction();
-    session.endSession();
+    // Delete related user
+    await User.deleteOne({ userName: mentor.userName }, { session });
 
-    return student;
+    await session.commitTransaction();
+    return mentor;
   } catch (error) {
-    session.abortTransaction();
+    await session.abortTransaction();
     throw error;
+  } finally {
+    session.endSession();
   }
 };
 
@@ -171,5 +171,6 @@ export const MentorService = {
   getSingleMentor,
   updateMentor,
   updateMentorSchedule,
+  rejectMentor,
   deleteMentor,
 };
