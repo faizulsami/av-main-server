@@ -19,7 +19,7 @@ router.get(
   // ),
   MentorController.getSingleMentor
 );
-router.patch(
+router.put(
   "/:id/reject",
   // auth(ENUM_USER_ROLE.SUPER_ADMIN),
   MentorController.rejectMentor
@@ -30,8 +30,8 @@ router.delete(
   MentorController.deleteMentor
 );
 
-router.patch("/schedule", MentorController.updateMentorSchedule);
-router.patch("/:userName", MentorController.updateMentor);
+router.put("/schedule", MentorController.updateMentorSchedule);
+router.put("/:userName", MentorController.updateMentor);
 router.get(
   "/",
   // auth(

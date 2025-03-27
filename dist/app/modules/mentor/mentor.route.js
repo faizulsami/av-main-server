@@ -16,14 +16,14 @@ router.get("/:userName",
 //   ENUM_USER_ROLE.MENTOR
 // ),
 mentor_controller_1.MentorController.getSingleMentor);
-router.patch("/:id/reject", 
+router.put("/:id/reject", 
 // auth(ENUM_USER_ROLE.SUPER_ADMIN),
 mentor_controller_1.MentorController.rejectMentor);
 router.delete("/:id", 
 // auth(ENUM_USER_ROLE.SUPER_ADMIN),
 mentor_controller_1.MentorController.deleteMentor);
-router.patch("/schedule", mentor_controller_1.MentorController.updateMentorSchedule);
-router.patch("/:userName", mentor_controller_1.MentorController.updateMentor);
+router.put("/schedule", mentor_controller_1.MentorController.updateMentorSchedule);
+router.put("/:userName", mentor_controller_1.MentorController.updateMentor);
 router.get("/", 
 // auth(
 //   ENUM_USER_ROLE.SUPER_ADMIN,
