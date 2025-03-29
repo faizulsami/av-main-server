@@ -172,6 +172,12 @@ const initializeSocket = (server: HTTPServer) => {
           createdAt: new Date(),
         });
     });
+    socket.on("is-able-to-chat", (data: any) => {
+      const user = online_users.find((u) => u.name === data.menteeUserName);
+      if (!user) return;
+
+      io.to(user.socket_id).emit("is-able-to-chat", data);
+    });
     socket.on("mentor-online", (data: any) => {
       socket.broadcast.emit("mentor-online", data);
     });
