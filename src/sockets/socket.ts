@@ -92,8 +92,17 @@ const initializeSocket = (server: HTTPServer) => {
 
     socket.on(
       "call:ended",
-      (data: { callEndedUsername: string; callerSocketId: string }) => {
-        io.to(data.callerSocketId).emit("call:ended", {
+      (data: {
+        needToEndCallUsername: string;
+        callEndedUsername: string;
+        callEndUserType: string;
+      }) => {
+        const user = online_users.find(
+          (u) => u.name === data.needToEndCallUsername
+        );
+
+        if (!user) return;
+        io.to(user.socket_id).emit("call:ended", {
           callEndedUsername: data.callEndedUsername,
         });
       }
