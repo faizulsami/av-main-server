@@ -10,7 +10,7 @@ router.get("/:id", AppointmentController.getSingleAppointment);
 
 router.get("/", AppointmentController.getAllAppointments);
 
-router.patch(
+router.put(
   "/:id",
   // validateRequest(AcademicFacultyValidation.updatefacultyZodSchema),
   // auth(

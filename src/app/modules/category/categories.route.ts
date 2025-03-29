@@ -14,7 +14,7 @@ router.post("/create-categories", CategoriesController.createCategories);
 
 router.get("/", CategoriesController.getAllCategories);
 
-router.patch(
+router.put(
   "/:id",
 
   CategoriesController.updateCategories

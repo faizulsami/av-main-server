@@ -24,7 +24,7 @@ router.get(
   MessagingController.getAllMessages
 );
 
-router.patch(
+router.put(
   "/:id",
 
   MessagingController.updateMessageSeenStatus
