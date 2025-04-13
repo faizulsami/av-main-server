@@ -5,8 +5,10 @@ import ApiError from '../../../errors/ApiError';
 import { IUserDetails } from './userDetails.interface';
 import { UserDetails } from './userDetails.model';
 
-const getSingleUserDetails = async (id: string): Promise<IUserDetails | null> => {
-  const result = await UserDetails.findOne({ _id:id });
+const getSingleUserDetails = async (
+  id: string
+): Promise<IUserDetails | null> => {
+  const result = await UserDetails.findOne({ _id: id });
   return result;
 };
 
@@ -74,7 +76,7 @@ const updateUserDetails = async (
   id: string,
   payload: Partial<IUserDetails>
 ): Promise<IUserDetails | null> => {
-  const isExist = await UserDetails.findOne({ _id:id });
+  const isExist = await UserDetails.findOne({ _id: id });
 
   if (!isExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found !');
@@ -85,16 +87,20 @@ const updateUserDetails = async (
   const updatedStudentData: Partial<IUserDetails> = { ...adminData };
 
   if (name && Object.keys(name).length > 0) {
-    Object.keys(name).forEach(key => {
+    Object.keys(name).forEach((key) => {
       const nameKey = `name.${key}` as keyof Partial<IUserDetails>;
       (updatedStudentData as any)[nameKey] = name[key as keyof typeof name];
     });
   }
-  console.log('updatedStudentData',updatedStudentData)
-// const result:any= []
-  const result = await UserDetails.findOneAndUpdate({ _id:id }, updatedStudentData, {
-    new: true,
-  });
+  console.log('updatedStudentData', updatedStudentData);
+  // const result:any= []
+  const result = await UserDetails.findOneAndUpdate(
+    { _id: id },
+    updatedStudentData,
+    {
+      new: true,
+    }
+  );
   return result;
 };
 

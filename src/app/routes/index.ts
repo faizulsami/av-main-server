@@ -1,51 +1,56 @@
-import express from "express";
+import express from 'express';
 
-import { AppointmentRoutes } from "../modules/appointment/appointments.route";
-import { AuthRoutes } from "../modules/auth/auth.route";
-import { BlogRoutes } from "../modules/blog/blog.route";
-import { CategoriesRoutes } from "../modules/category/categories.route";
-import { FileUploadRoutes } from "../modules/fileUpload/fileUPload.route";
-import { MentorRoutes } from "../modules/mentor/mentor.route";
-import { MessagingRoutes } from "../modules/messaging/messaging.route";
-import { NotificationRoutes } from "../modules/notification/notification.route";
-import { UserRoutes } from "../modules/user/user.route";
-import { UserDetailsRoutes } from "../modules/userDetails/userDetails.route";
-import { CommunityRoutes } from "../modules/community/community.route";
+import { AppointmentRoutes } from '../modules/appointment/appointments.route';
+import { AuthRoutes } from '../modules/auth/auth.route';
+import { BlogRoutes } from '../modules/blog/blog.route';
+import { CategoriesRoutes } from '../modules/category/categories.route';
+import { FileUploadRoutes } from '../modules/fileUpload/fileUPload.route';
+import { MentorRoutes } from '../modules/mentor/mentor.route';
+import { MessagingRoutes } from '../modules/messaging/messaging.route';
+import { NotificationRoutes } from '../modules/notification/notification.route';
+import { UserRoutes } from '../modules/user/user.route';
+import { UserDetailsRoutes } from '../modules/userDetails/userDetails.route';
+import { CommunityRoutes } from '../modules/community/community.route';
+import { newsletterRoutes } from '../modules/newsletter/newsletter.route';
 
 const router = express.Router();
 
 const moduleRoutes = [
   {
-    path: "/users",
+    path: '/users',
     route: UserRoutes,
   },
   {
-    path: "/mentors",
+    path: '/newsletter',
+    route: newsletterRoutes,
+  },
+  {
+    path: '/mentors',
     route: MentorRoutes,
   },
   {
-    path: "/appointments",
+    path: '/appointments',
     route: AppointmentRoutes,
   },
   {
-    path: "/userDetails",
+    path: '/userDetails',
     route: UserDetailsRoutes,
   },
   {
-    path: "/auth",
+    path: '/auth',
     route: AuthRoutes,
   },
   {
-    path: "/message",
+    path: '/message',
     route: MessagingRoutes,
   },
 
   {
-    path: "/blog-post",
+    path: '/blog-post',
     route: BlogRoutes,
   },
   {
-    path: "/categories",
+    path: '/categories',
     route: CategoriesRoutes,
   },
   // {
@@ -53,11 +58,11 @@ const moduleRoutes = [
   //   route: FileUploadRoutes,
   // },
   {
-    path: "/notifications",
+    path: '/notifications',
     route: NotificationRoutes,
   },
   {
-    path: "/community",
+    path: '/community',
     route: CommunityRoutes,
   },
 ];

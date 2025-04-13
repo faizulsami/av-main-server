@@ -1,23 +1,23 @@
-import { create } from "domain";
-import httpStatus from "http-status";
-import { Secret } from "jsonwebtoken";
-import mongoose, { SortOrder } from "mongoose";
-import multer from "multer";
-import { scheduler } from "timers/promises";
+import { create } from 'domain';
+import httpStatus from 'http-status';
+import { Secret } from 'jsonwebtoken';
+import mongoose, { SortOrder } from 'mongoose';
+import multer from 'multer';
+import { scheduler } from 'timers/promises';
 
-import ApiError from "../../../errors/ApiError";
-import { jwtHelpers } from "../../../helpers/jwtHelpers";
-import { paginationHelpers } from "../../../helpers/paginationHelper";
-import { IGenericResponse } from "../../../interfaces/common";
-import { IPaginationOptions } from "../../../interfaces/pagination";
-import { sendEmail } from "../../../shared/mailNotification";
-import config, { NEXT_CLIENT_URL } from "../../../config";
-import { IMentor } from "../mentor/mentor.interface";
-import { Mentor } from "../mentor/mentor.model";
-import { MentorSchedule } from "../mentor/mentorSchedule.model";
-import { UserDetails } from "../userDetails/userDetails.model";
-import { IAdmin, IMentee, IUser, IUserFilters } from "./user.interface";
-import { User } from "./user.model";
+import ApiError from '../../../errors/ApiError';
+import { jwtHelpers } from '../../../helpers/jwtHelpers';
+import { paginationHelpers } from '../../../helpers/paginationHelper';
+import { IGenericResponse } from '../../../interfaces/common';
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import { sendEmail } from '../../../shared/mailNotification';
+import config, { NEXT_CLIENT_URL } from '../../../config';
+import { IMentor } from '../mentor/mentor.interface';
+import { Mentor } from '../mentor/mentor.model';
+import { MentorSchedule } from '../mentor/mentorSchedule.model';
+import { UserDetails } from '../userDetails/userDetails.model';
+import { IAdmin, IMentee, IUser, IUserFilters } from './user.interface';
+import { User } from './user.model';
 
 const createAdmin = async (
   admin: IAdmin,
@@ -28,7 +28,7 @@ const createAdmin = async (
     user.password = config.default_admin_pass as string;
   }
   // set role
-  user.role = "admin";
+  user.role = 'admin';
 
   let newUserAllData: any = null;
   const session = await mongoose.startSession();
@@ -38,7 +38,7 @@ const createAdmin = async (
     const newAdmin = await UserDetails.create([admin], { session });
 
     if (!newAdmin.length) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Failed to create faculty ");
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to create faculty ');
     }
 
     user.userDetails = newAdmin[0]._id;
@@ -46,7 +46,7 @@ const createAdmin = async (
     const newUser = await User.create([user], { session });
 
     if (!newUser.length) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Failed to create admin");
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to create admin');
     }
     newUserAllData = newUser[0];
 
@@ -60,7 +60,7 @@ const createAdmin = async (
 
   if (newUserAllData) {
     newUserAllData = await User.findOne({ id: newUserAllData.id }).populate({
-      path: "userDetails",
+      path: 'userDetails',
     });
   }
 
@@ -75,7 +75,7 @@ const createMentor = async (
     user.password = config.default_admin_pass as string;
   }
   // set role
-  user.role = "mentor";
+  user.role = 'mentor';
   mentor.userName = user.userName;
 
   let newUserAllData: any = null;
@@ -96,14 +96,14 @@ const createMentor = async (
     if (!newMentorSchedule.length) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,
-        "Failed to create mentor shedule"
+        'Failed to create mentor shedule'
       );
     }
     mentor.scheduleId = newMentorSchedule[0]._id;
     const newMentor = await Mentor.create([mentor], { session });
 
     if (!newMentor.length) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Failed to create mentor ");
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to create mentor ');
     }
 
     user.userDetails = newMentor[0]._id;
@@ -111,7 +111,7 @@ const createMentor = async (
     const newUser = await User.create([user], { session });
 
     if (!newUser.length) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Failed to create mentor");
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to create mentor');
     }
     newUserAllData = newUser[0];
     const token = jwtHelpers.createToken(
@@ -120,7 +120,7 @@ const createMentor = async (
       config.jwt.expires_in as string
     );
 
-    console.log("token", token);
+    console.log('token', token);
 
     await session.commitTransaction();
     await session.endSession();
@@ -132,7 +132,7 @@ const createMentor = async (
 
   if (newUserAllData) {
     newUserAllData = await User.findOne({ id: newUserAllData.id }).populate({
-      path: "userDetails",
+      path: 'userDetails',
     });
   }
 
@@ -147,8 +147,8 @@ const isUsernameDuplicate = async (
     console.log(existingUser !== null);
     return existingUser !== null; // Returns true if a user is found, otherwise false
   } catch (error) {
-    console.error("Error checking username duplicate:", error);
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Database error");
+    console.error('Error checking username duplicate:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Database error');
   }
 };
 const createMentee = async (
@@ -160,7 +160,7 @@ const createMentee = async (
     user.password = config.default_admin_pass as string;
   }
   // set role
-  user.role = "mentee";
+  user.role = 'mentee';
   mentee.userName = user.userName;
 
   let newUserAllData: any = null;
@@ -171,7 +171,7 @@ const createMentee = async (
     const newMentee = await UserDetails.create([mentee], { session });
 
     if (!newMentee.length) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Failed to create mentee ");
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to create mentee ');
     }
 
     user.userDetails = newMentee[0]._id;
@@ -179,7 +179,7 @@ const createMentee = async (
     const newUser = await User.create([user], { session });
 
     if (!newUser.length) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Failed to create mentee");
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to create mentee');
     }
     newUserAllData = newUser[0];
     const token = jwtHelpers.createToken(
@@ -188,7 +188,7 @@ const createMentee = async (
       config.jwt.expires_in as string
     );
     // config.jwt.expires_in as string
-    console.log("token", token);
+    console.log('token', token);
 
     await session.commitTransaction();
     await session.endSession();
@@ -200,11 +200,22 @@ const createMentee = async (
 
   if (newUserAllData) {
     newUserAllData = await User.findOne({ id: newUserAllData.id }).populate({
-      path: "userDetails",
+      path: 'userDetails',
     });
   }
 
   return newUserAllData;
+};
+
+const getSpecificUser = async (id: string) => {
+  console.log(id);
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  return user;
 };
 
 // const imageUpload = async (req:any,res:any): Promise<any> => {
@@ -259,5 +270,6 @@ export const UserService = {
   createMentor,
   createMentee,
   isUsernameDuplicate,
+  getSpecificUser,
   // imageUpload
 };

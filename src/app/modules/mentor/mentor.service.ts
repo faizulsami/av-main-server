@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import httpStatus from "http-status";
-import mongoose, { SortOrder, Types } from "mongoose";
+import httpStatus from 'http-status';
+import mongoose, { SortOrder, Types } from 'mongoose';
 
-import ApiError from "../../../errors/ApiError";
-import { paginationHelpers } from "../../../helpers/paginationHelper";
-import { IGenericResponse } from "../../../interfaces/common";
-import { IPaginationOptions } from "../../../interfaces/pagination";
-import { User } from "../user/user.model";
-import { mentorSearchableFields } from "./mentor.constant";
-import { IMentor, IMentorFilters, IMentorSchedule } from "./mentor.interface";
-import { Mentor } from "./mentor.model";
-import { MentorSchedule } from "./mentorSchedule.model";
+import ApiError from '../../../errors/ApiError';
+import { paginationHelpers } from '../../../helpers/paginationHelper';
+import { IGenericResponse } from '../../../interfaces/common';
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import { User } from '../user/user.model';
+import { mentorSearchableFields } from './mentor.constant';
+import { IMentor, IMentorFilters, IMentorSchedule } from './mentor.interface';
+import { Mentor } from './mentor.model';
+import { MentorSchedule } from './mentorSchedule.model';
+import { UserDetails } from '../userDetails/userDetails.model';
 
 const getAllMentors = async (
   filters: IMentorFilters,
@@ -27,7 +28,7 @@ const getAllMentors = async (
       $or: mentorSearchableFields.map((field) => ({
         [field]: {
           $regex: searchTerm,
-          $options: "i",
+          $options: 'i',
         },
       })),
     });
@@ -52,7 +53,7 @@ const getAllMentors = async (
   const result = await Mentor.find(whereConditions)
     // .populate('academicSemester')
     // .populate('academicDepartment')
-    .populate("scheduleId")
+    .populate('scheduleId')
     .sort(sortConditions)
     .skip(skip)
     .limit(limit);
@@ -71,11 +72,11 @@ const getAllMentors = async (
 
 const getSingleMentor = async (userName: string): Promise<IMentor | null> => {
   const result = await Mentor.findOne({ userName: userName }).populate(
-    "scheduleId"
+    'scheduleId'
   );
 
   if (!result) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Mentor not found !");
+    throw new ApiError(httpStatus.NOT_FOUND, 'Mentor not found !');
   }
 
   return result;
@@ -88,7 +89,7 @@ const updateMentor = async (
   const isExist = await Mentor.findOne({ userName });
 
   if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Mentor not found !");
+    throw new ApiError(httpStatus.NOT_FOUND, 'Mentor not found !');
   }
 
   const { name, ...mentorData } = payload;
@@ -117,7 +118,7 @@ const updateMentorSchedule = async (
   const { userName } = payload;
   const isExist = await Mentor.findOne({ userName });
   if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Mentor not found !");
+    throw new ApiError(httpStatus.NOT_FOUND, 'Mentor not found !');
   }
   const { schedule } = payload;
 
@@ -150,11 +151,13 @@ const deleteMentor = async (id: string): Promise<IMentor | null> => {
     );
 
     if (!mentor) {
-      throw new ApiError(400, "Failed to delete mentor");
+      throw new ApiError(400, 'Failed to delete mentor');
     }
 
     // Delete related user
     await User.deleteOne({ userName: mentor.userName }, { session });
+    await UserDetails.deleteOne({ userName: mentor.userName }, { session });
+    await MentorSchedule.deleteOne({ userName: mentor.userName }, { session });
 
     await session.commitTransaction();
     return mentor;

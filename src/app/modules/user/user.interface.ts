@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
-import { Model, Types } from "mongoose";
+import { Model, Types } from 'mongoose';
 
-import { IUserDetails } from "../userDetails/userDetails.interface";
+import { IUserDetails } from '../userDetails/userDetails.interface';
 
 export type IUser = {
   id?: string;
@@ -29,17 +29,17 @@ export type IAdmin = {
   email: string;
   contactNo: string;
   emergencyContactNo: string;
-  gender?: "male" | "female";
+  gender: 'male' | 'female';
   permanentAddress?: string;
   presentAddress?: string;
-  bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
+  bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
   designation: string;
 };
 
 export type IMentee = {
   id: string;
   userName: string;
-  gender?: "male" | "female";
+  gender?: 'male' | 'female';
   age: number;
 };
 
@@ -49,12 +49,13 @@ export type UserModel = {
   ): Promise<
     Pick<
       IUser,
-      | "password"
-      | "role"
-      | "needsPasswordChange"
-      | "email"
-      | "userDetails"
-      | "isVerified"
+      | 'password'
+      | 'role'
+      | 'needsPasswordChange'
+      | 'email'
+      | 'userDetails'
+      | 'isVerified'
+      | '_id'
     >
   >;
   isPasswordMatched(

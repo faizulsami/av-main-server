@@ -6,16 +6,15 @@ import {
   ILoginUserResponse,
   IRefreshTokenResponse,
   IUserVerification,
-} from "./auth.interface";
-import httpStatus from "http-status";
-import { JwtPayload, Secret } from "jsonwebtoken";
-
-import ApiError from "../../../errors/ApiError";
-import { jwtHelpers } from "../../../helpers/jwtHelpers";
-import { sendEmail } from "../../../shared/mailNotification";
-import config, { ADMIN_EMAIL, NEXT_CLIENT_URL } from "../../../config";
-import { User } from "../user/user.model";
-import { Mentor } from "../mentor/mentor.model";
+} from './auth.interface';
+import httpStatus from 'http-status';
+import { JwtPayload, Secret } from 'jsonwebtoken';
+import ApiError from '../../../errors/ApiError';
+import { jwtHelpers } from '../../../helpers/jwtHelpers';
+import { sendEmail } from '../../../shared/mailNotification';
+import config, { ADMIN_EMAIL, NEXT_CLIENT_URL } from '../../../config';
+import { User } from '../user/user.model';
+import { Mentor } from '../mentor/mentor.model';
 
 const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   const { userName, password } = payload;
@@ -23,7 +22,7 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   const isUserExist = await User.isUserExist(userName);
 
   if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
   }
 
   const user = await new User();
@@ -32,11 +31,12 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
     isUserExist.password &&
     !(await User.isPasswordMatched(password, isUserExist.password))
   ) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Password is incorrect");
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password is incorrect');
   }
 
   //create access token & refresh token
-  const { role, needsPasswordChange, userDetails, isVerified } = isUserExist;
+  const { role, needsPasswordChange, userDetails, isVerified, _id } =
+    isUserExist;
 
   const id = user?._id;
   const accessTokenData: Record<string, any> = {
@@ -44,11 +44,20 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
     role,
     userDetails: id,
     isVerified,
+    id: _id,
   };
-  if (role === "mentor") {
+
+  if (role === 'mentor') {
     const mentor = await Mentor.findOne({ userName: userName }).select(
-      "+adminApproval"
+      '+adminApproval'
     );
+
+    if (!mentor.adminApproval) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Please wait for admin approval!'
+      );
+    }
 
     accessTokenData.adminApproval = mentor.adminApproval;
   }
@@ -85,7 +94,7 @@ const emailVerification = async (payload: IUserVerification): Promise<any> => {
     const data = {
       from: ADMIN_EMAIL,
       to: email,
-      subject: "Reset Password",
+      subject: 'Reset Password',
       text: `Hi ${email} you have requested to reset your password. Please click on the link below to reset your password. ${NEXT_CLIENT_URL}/reset-password/${email}`,
     };
 
@@ -113,12 +122,12 @@ const jwtVerification = async (payload: string): Promise<any> => {
         }
       );
     } else {
-      console.log("Token has expired");
+      console.log('Token has expired');
     }
   } catch (err) {
     throw new ApiError(
       httpStatus.OK,
-      err?.message === "jwt expired" ? "Token Expired" : "Invalid Token"
+      err?.message === 'jwt expired' ? 'Token Expired' : 'Invalid Token'
     );
   }
 
@@ -138,12 +147,12 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
     );
     if (verifiedToken?.exp > Date.now() / 1000) {
       // Perform email verification logic here
-      console.log("Verification successful:", verifiedToken);
+      console.log('Verification successful:', verifiedToken);
     } else {
-      console.log("Token has expired");
+      console.log('Token has expired');
     }
   } catch (err) {
-    throw new ApiError(httpStatus.FORBIDDEN, "Invalid Refresh Token");
+    throw new ApiError(httpStatus.FORBIDDEN, 'Invalid Refresh Token');
   }
 
   const { userId } = verifiedToken;
@@ -153,7 +162,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
 
   const isUserExist = await User.isUserExist(userId);
   if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
   }
   //generate new token
 
@@ -183,11 +192,11 @@ const changePassword = async (
 
   //alternative way
   const isUserExist = await User.findOne({ id: user?.email }).select(
-    "+password"
+    '+password'
   );
 
   if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
   }
 
   // checking old password
@@ -195,7 +204,7 @@ const changePassword = async (
     isUserExist.password &&
     !(await User.isPasswordMatched(oldPassword, isUserExist.password))
   ) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Old Password is incorrect");
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Old Password is incorrect');
   }
 
   // // hash password before saving
@@ -227,10 +236,10 @@ const forgetPassword = async (payload: IForgetPassword): Promise<void> => {
   // const isUserExist = await User.isUserExist(user?.userId);
 
   //alternative way
-  const isUserExist = await User.findOne({ email: email }).select("+password");
+  const isUserExist = await User.findOne({ email: email }).select('+password');
 
   if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
   }
 
   // checking old password
