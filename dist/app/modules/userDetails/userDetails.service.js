@@ -91,7 +91,7 @@ const updateUserDetails = (id, payload) => __awaiter(void 0, void 0, void 0, fun
     const { name } = payload, adminData = __rest(payload, ["name"]);
     const updatedStudentData = Object.assign({}, adminData);
     if (name && Object.keys(name).length > 0) {
-        Object.keys(name).forEach(key => {
+        Object.keys(name).forEach((key) => {
             const nameKey = `name.${key}`;
             updatedStudentData[nameKey] = name[key];
         });

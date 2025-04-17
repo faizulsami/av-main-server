@@ -10,7 +10,7 @@ const router = express_1.default.Router();
 router.post("/create-appointment", appointments_controller_1.AppointmentController.createAppointment);
 router.get("/:id", appointments_controller_1.AppointmentController.getSingleAppointment);
 router.get("/", appointments_controller_1.AppointmentController.getAllAppointments);
-router.patch("/:id", 
+router.put("/:id", 
 // validateRequest(AcademicFacultyValidation.updatefacultyZodSchema),
 // auth(
 //   ENUM_USER_ROLE.SUPER_ADMIN,

@@ -14,38 +14,43 @@ const notification_route_1 = require("../modules/notification/notification.route
 const user_route_1 = require("../modules/user/user.route");
 const userDetails_route_1 = require("../modules/userDetails/userDetails.route");
 const community_route_1 = require("../modules/community/community.route");
+const newsletter_route_1 = require("../modules/newsletter/newsletter.route");
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
-        path: "/users",
+        path: '/users',
         route: user_route_1.UserRoutes,
     },
     {
-        path: "/mentors",
+        path: '/newsletter',
+        route: newsletter_route_1.newsletterRoutes,
+    },
+    {
+        path: '/mentors',
         route: mentor_route_1.MentorRoutes,
     },
     {
-        path: "/appointments",
+        path: '/appointments',
         route: appointments_route_1.AppointmentRoutes,
     },
     {
-        path: "/userDetails",
+        path: '/userDetails',
         route: userDetails_route_1.UserDetailsRoutes,
     },
     {
-        path: "/auth",
+        path: '/auth',
         route: auth_route_1.AuthRoutes,
     },
     {
-        path: "/message",
+        path: '/message',
         route: messaging_route_1.MessagingRoutes,
     },
     {
-        path: "/blog-post",
+        path: '/blog-post',
         route: blog_route_1.BlogRoutes,
     },
     {
-        path: "/categories",
+        path: '/categories',
         route: categories_route_1.CategoriesRoutes,
     },
     // {
@@ -53,11 +58,11 @@ const moduleRoutes = [
     //   route: FileUploadRoutes,
     // },
     {
-        path: "/notifications",
+        path: '/notifications',
         route: notification_route_1.NotificationRoutes,
     },
     {
-        path: "/community",
+        path: '/community',
         route: community_route_1.CommunityRoutes,
     },
 ];

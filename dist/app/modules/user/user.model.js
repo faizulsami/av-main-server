@@ -29,12 +29,11 @@ const UserSchema = new mongoose_1.Schema({
     },
     status: {
         type: String,
-        default: "offline",
+        default: 'offline',
     },
     userName: {
         type: String,
         required: true,
-        unique: true,
         immutable: true,
     },
     // email: {
@@ -60,7 +59,7 @@ const UserSchema = new mongoose_1.Schema({
     },
     userDetails: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: "UserDetails",
+        ref: 'UserDetails',
     },
 }, {
     timestamps: true,
@@ -76,7 +75,7 @@ UserSchema.statics.isUserExist = function (userName) {
             needsPasswordChange: 1,
             userDetails: 1,
             isVerified: 1,
-        }).populate("userDetails");
+        }).populate('userDetails');
     });
 };
 UserSchema.statics.isPasswordMatched = function (givenPassword, savedPassword) {
@@ -85,10 +84,10 @@ UserSchema.statics.isPasswordMatched = function (givenPassword, savedPassword) {
     });
 };
 UserSchema.methods.changedPasswordAfterJwtIssued = function (jwtTimestamp) {
-    console.log({ jwtTimestamp }, "hi");
+    console.log({ jwtTimestamp }, 'hi');
 };
 // User.create() / user.save()
-UserSchema.pre("save", function (next) {
+UserSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         // hashing user password
         const user = this;
@@ -99,7 +98,7 @@ UserSchema.pre("save", function (next) {
         next();
     });
 });
-exports.User = (0, mongoose_1.model)("User", UserSchema);
+exports.User = (0, mongoose_1.model)('User', UserSchema);
 // interface IImage {
 //   name: string;
 //   image: {

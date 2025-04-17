@@ -34,7 +34,7 @@ const createAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Admin created successfully!",
+        message: 'Admin created successfully!',
         data: result,
     });
 }));
@@ -44,7 +44,7 @@ const createMentor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Mentor created successfully!",
+        message: 'Mentor created successfully!',
         data: result,
     });
 }));
@@ -54,7 +54,7 @@ const isUsernameDuplicateController = (0, catchAsync_1.default)((req, res) => __
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: result ? "username is already in use" : "username is not in use",
+        message: result ? 'username is already in use' : 'username is not in use',
         data: `${result}`,
     });
 }));
@@ -64,8 +64,19 @@ const createMentee = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Mentee created successfully!",
+        message: 'Mentee created successfully!',
         data: result,
+    });
+}));
+const getSpecificUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    console.log(id);
+    const data = yield user_service_1.UserService.getSpecificUser(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Get Specific User!',
+        data: data,
     });
 }));
 // const imageUpload: RequestHandler = catchAsync(
@@ -84,5 +95,6 @@ exports.UserController = {
     createMentor,
     createMentee,
     isUsernameDuplicateController,
+    getSpecificUser,
     // imageUpload
 };

@@ -15,13 +15,23 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -47,24 +57,28 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { userName, password } = payload;
     const isUserExist = yield user_model_1.User.isUserExist(userName);
     if (!isUserExist) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User does not exist");
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist');
     }
     const user = yield new user_model_1.User();
     if (isUserExist.password &&
         !(yield user_model_1.User.isPasswordMatched(password, isUserExist.password))) {
-        throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, "Password is incorrect");
+        throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, 'Password is incorrect');
     }
     //create access token & refresh token
-    const { role, needsPasswordChange, userDetails, isVerified } = isUserExist;
+    const { role, needsPasswordChange, userDetails, isVerified, _id } = isUserExist;
     const id = user === null || user === void 0 ? void 0 : user._id;
     const accessTokenData = {
         userName,
         role,
         userDetails: id,
         isVerified,
+        id: _id,
     };
-    if (role === "mentor") {
-        const mentor = yield mentor_model_1.Mentor.findOne({ userName: userName }).select("+adminApproval");
+    if (role === 'mentor') {
+        const mentor = yield mentor_model_1.Mentor.findOne({ userName: userName }).select('+adminApproval');
+        if (!mentor.adminApproval) {
+            throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Please wait for admin approval!');
+        }
         accessTokenData.adminApproval = mentor.adminApproval;
     }
     const accessToken = jwtHelpers_1.jwtHelpers.createToken(accessTokenData, config_1.default.jwt.secret, config_1.default.jwt.expires_in);
@@ -88,7 +102,7 @@ const emailVerification = (payload) => __awaiter(void 0, void 0, void 0, functio
         const data = {
             from: config_1.ADMIN_EMAIL,
             to: email,
-            subject: "Reset Password",
+            subject: 'Reset Password',
             text: `Hi ${email} you have requested to reset your password. Please click on the link below to reset your password. ${config_1.NEXT_CLIENT_URL}/reset-password/${email}`,
         };
         (0, mailNotification_1.sendEmail)(data);
@@ -111,11 +125,11 @@ const jwtVerification = (payload) => __awaiter(void 0, void 0, void 0, function*
             });
         }
         else {
-            console.log("Token has expired");
+            console.log('Token has expired');
         }
     }
     catch (err) {
-        throw new ApiError_1.default(http_status_1.default.OK, (err === null || err === void 0 ? void 0 : err.message) === "jwt expired" ? "Token Expired" : "Invalid Token");
+        throw new ApiError_1.default(http_status_1.default.OK, (err === null || err === void 0 ? void 0 : err.message) === 'jwt expired' ? 'Token Expired' : 'Invalid Token');
     }
     return {
         token: verifiedToken,
@@ -129,21 +143,21 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         verifiedToken = jwtHelpers_1.jwtHelpers.verifyToken(token, config_1.default.jwt.refresh_secret);
         if ((verifiedToken === null || verifiedToken === void 0 ? void 0 : verifiedToken.exp) > Date.now() / 1000) {
             // Perform email verification logic here
-            console.log("Verification successful:", verifiedToken);
+            console.log('Verification successful:', verifiedToken);
         }
         else {
-            console.log("Token has expired");
+            console.log('Token has expired');
         }
     }
     catch (err) {
-        throw new ApiError_1.default(http_status_1.default.FORBIDDEN, "Invalid Refresh Token");
+        throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'Invalid Refresh Token');
     }
     const { userId } = verifiedToken;
     // tumi delete hye gso  kintu tumar refresh token ase
     // checking deleted user's refresh token
     const isUserExist = yield user_model_1.User.isUserExist(userId);
     if (!isUserExist) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User does not exist");
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist');
     }
     //generate new token
     const newAccessToken = jwtHelpers_1.jwtHelpers.createToken({
@@ -160,14 +174,14 @@ const changePassword = (user, payload) => __awaiter(void 0, void 0, void 0, func
     // // checking is user exist
     // const isUserExist = await User.isUserExist(user?.userId);
     //alternative way
-    const isUserExist = yield user_model_1.User.findOne({ id: user === null || user === void 0 ? void 0 : user.email }).select("+password");
+    const isUserExist = yield user_model_1.User.findOne({ id: user === null || user === void 0 ? void 0 : user.email }).select('+password');
     if (!isUserExist) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User does not exist");
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist');
     }
     // checking old password
     if (isUserExist.password &&
         !(yield user_model_1.User.isPasswordMatched(oldPassword, isUserExist.password))) {
-        throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, "Old Password is incorrect");
+        throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, 'Old Password is incorrect');
     }
     // // hash password before saving
     // const newHashedPassword = await bcrypt.hash(
@@ -192,9 +206,9 @@ const forgetPassword = (payload) => __awaiter(void 0, void 0, void 0, function* 
     // // checking is user exist
     // const isUserExist = await User.isUserExist(user?.userId);
     //alternative way
-    const isUserExist = yield user_model_1.User.findOne({ email: email }).select("+password");
+    const isUserExist = yield user_model_1.User.findOne({ email: email }).select('+password');
     if (!isUserExist) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User does not exist");
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist');
     }
     // checking old password
     // if (

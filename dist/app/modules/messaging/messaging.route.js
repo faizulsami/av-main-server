@@ -10,7 +10,7 @@ const router = express_1.default.Router();
 router.post("/create-message", messaging_controller_1.MessagingController.createMessage);
 router.get("/:id", messaging_controller_1.MessagingController.getSingleMessage);
 router.get("/", messaging_controller_1.MessagingController.getAllMessages);
-router.patch("/:id", messaging_controller_1.MessagingController.updateMessageSeenStatus);
+router.put("/:id", messaging_controller_1.MessagingController.updateMessageSeenStatus);
 // router.delete(
 //   '/:id',
 //   auth(ENUM_USER_ROLE.SUPER_ADMIN),

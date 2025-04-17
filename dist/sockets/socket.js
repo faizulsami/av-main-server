@@ -66,7 +66,10 @@ const initializeSocket = (server) => {
             });
         });
         socket.on("call:ended", (data) => {
-            io.to(data.callerSocketId).emit("call:ended", {
+            const user = online_users.find((u) => u.name === data.needToEndCallUsername);
+            if (!user)
+                return;
+            io.to(user.socket_id).emit("call:ended", {
                 callEndedUsername: data.callEndedUsername,
             });
         });
@@ -126,6 +129,12 @@ const initializeSocket = (server) => {
             }
             else
                 socket.broadcast.emit("notification", Object.assign(Object.assign({}, data), { createdAt: new Date() }));
+        });
+        socket.on("is-able-to-chat", (data) => {
+            const user = online_users.find((u) => u.name === data.menteeUserName);
+            if (!user)
+                return;
+            io.to(user.socket_id).emit("is-able-to-chat", data);
         });
         socket.on("mentor-online", (data) => {
             socket.broadcast.emit("mentor-online", data);

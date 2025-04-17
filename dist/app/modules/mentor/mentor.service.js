@@ -15,13 +15,23 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -56,6 +66,7 @@ const user_model_1 = require("../user/user.model");
 const mentor_constant_1 = require("./mentor.constant");
 const mentor_model_1 = require("./mentor.model");
 const mentorSchedule_model_1 = require("./mentorSchedule.model");
+const userDetails_model_1 = require("../userDetails/userDetails.model");
 const getAllMentors = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     // Extract searchTerm to implement search query
     const { searchTerm } = filters, filtersData = __rest(filters, ["searchTerm"]);
@@ -67,7 +78,7 @@ const getAllMentors = (filters, paginationOptions) => __awaiter(void 0, void 0, 
             $or: mentor_constant_1.mentorSearchableFields.map((field) => ({
                 [field]: {
                     $regex: searchTerm,
-                    $options: "i",
+                    $options: 'i',
                 },
             })),
         });
@@ -89,7 +100,7 @@ const getAllMentors = (filters, paginationOptions) => __awaiter(void 0, void 0, 
     const result = yield mentor_model_1.Mentor.find(whereConditions)
         // .populate('academicSemester')
         // .populate('academicDepartment')
-        .populate("scheduleId")
+        .populate('scheduleId')
         .sort(sortConditions)
         .skip(skip)
         .limit(limit);
@@ -104,16 +115,16 @@ const getAllMentors = (filters, paginationOptions) => __awaiter(void 0, void 0, 
     };
 });
 const getSingleMentor = (userName) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield mentor_model_1.Mentor.findOne({ userName: userName }).populate("scheduleId");
+    const result = yield mentor_model_1.Mentor.findOne({ userName: userName }).populate('scheduleId');
     if (!result) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "Mentor not found !");
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Mentor not found !');
     }
     return result;
 });
 const updateMentor = (userName, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const isExist = yield mentor_model_1.Mentor.findOne({ userName });
     if (!isExist) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "Mentor not found !");
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Mentor not found !');
     }
     const { name } = payload, mentorData = __rest(payload, ["name"]);
     const updatedMentorData = Object.assign({}, mentorData);
@@ -132,7 +143,7 @@ const updateMentorSchedule = (payload) => __awaiter(void 0, void 0, void 0, func
     const { userName } = payload;
     const isExist = yield mentor_model_1.Mentor.findOne({ userName });
     if (!isExist) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "Mentor not found !");
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Mentor not found !');
     }
     const { schedule } = payload;
     const result = yield mentorSchedule_model_1.MentorSchedule.findOneAndUpdate({ userName }, { userName: userName, schedule: schedule }, {
@@ -151,10 +162,12 @@ const deleteMentor = (id) => __awaiter(void 0, void 0, void 0, function* () {
         // Delete mentor first
         const mentor = yield mentor_model_1.Mentor.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) }, { session });
         if (!mentor) {
-            throw new ApiError_1.default(400, "Failed to delete mentor");
+            throw new ApiError_1.default(400, 'Failed to delete mentor');
         }
         // Delete related user
         yield user_model_1.User.deleteOne({ userName: mentor.userName }, { session });
+        yield userDetails_model_1.UserDetails.deleteOne({ userName: mentor.userName }, { session });
+        yield mentorSchedule_model_1.MentorSchedule.deleteOne({ userName: mentor.userName }, { session });
         yield session.commitTransaction();
         return mentor;
     }

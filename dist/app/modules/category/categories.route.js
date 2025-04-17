@@ -13,7 +13,7 @@ router.post("/create-categories", categories_controller_1.CategoriesController.c
 //   CategoriesController.getSingleCategories
 // );
 router.get("/", categories_controller_1.CategoriesController.getAllCategories);
-router.patch("/:id", categories_controller_1.CategoriesController.updateCategories);
+router.put("/:id", categories_controller_1.CategoriesController.updateCategories);
 // router.delete(
 //   "/:id",
 //   // auth(ENUM_USER_ROLE.SUPER_ADMIN),

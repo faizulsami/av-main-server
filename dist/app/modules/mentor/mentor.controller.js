@@ -26,7 +26,7 @@ const getSingleMentor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Mentor fetched successfully !",
+        message: 'Mentor fetched successfully !',
         data: result,
     });
 }));
@@ -37,7 +37,7 @@ const getAllMentors = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Mentors fetched successfully !",
+        message: 'Mentors fetched successfully !',
         meta: result.meta,
         data: result.data,
     });
@@ -49,7 +49,7 @@ const updateMentor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Mentor updated successfully !",
+        message: 'Mentor updated successfully !',
         data: result,
     });
 }));
@@ -60,7 +60,7 @@ const updateMentorSchedule = (0, catchAsync_1.default)((req, res) => __awaiter(v
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "MentorSchedule updated successfully !",
+        message: 'MentorSchedule updated successfully !',
         data: result,
     });
 }));
@@ -70,7 +70,7 @@ const rejectMentor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Mentor rejected successfully !",
+        message: 'Mentor rejected successfully !',
         data: result,
     });
 }));
@@ -80,7 +80,7 @@ const deleteMentor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Mentor deleted successfully !",
+        message: 'Mentor deleted successfully !',
         data: result,
     });
 }));
