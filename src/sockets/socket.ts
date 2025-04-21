@@ -14,7 +14,7 @@ const initializeSocket = (server: HTTPServer) => {
   io = new SocketIOServer(server, {
     pingTimeout: 60000,
     cors: {
-      origin: "https://anonymousvoicesav.com",
+      origin: "*",
     },
   });
 
