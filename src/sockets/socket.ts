@@ -53,8 +53,11 @@ const initializeSocket = (server: HTTPServer) => {
         const online_user = online_users.find(
           (u) => u.name === invitation.receiverUsername
         );
-
+        console.log({ invitation, online_user });
         if (online_user) {
+          io.to(socket.id).emit("call:receiver-socket-id", {
+            receiverSocketId: online_user.socket_id,
+          });
           io.to(online_user.socket_id).emit("call:invite", {
             signal: invitation.signal,
             receiverSocketId: online_user.socket_id,
@@ -100,7 +103,7 @@ const initializeSocket = (server: HTTPServer) => {
         const user = online_users.find(
           (u) => u.name === data.needToEndCallUsername
         );
-
+        console.log("call:ended", { data, user });
         if (!user) return;
         io.to(user.socket_id).emit("call:ended", {
           callEndedUsername: data.callEndedUsername,
