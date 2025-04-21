@@ -14,8 +14,7 @@ const initializeSocket = (server: HTTPServer) => {
   io = new SocketIOServer(server, {
     pingTimeout: 60000,
     cors: {
-      origin: "*", // Adjust this according to your CORS policy
-      credentials: true,
+      origin: "https://anonymousvoicesav.com",
     },
   });
 
@@ -53,7 +52,7 @@ const initializeSocket = (server: HTTPServer) => {
         const online_user = online_users.find(
           (u) => u.name === invitation.receiverUsername
         );
-        console.log({ invitation, online_user });
+
         if (online_user) {
           io.to(socket.id).emit("call:receiver-socket-id", {
             receiverSocketId: online_user.socket_id,
