@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 /* eslint-disable @typescript-eslint/no-this-alias */
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const mongoose_1 = require("mongoose");
 const config_1 = __importDefault(require("../../../config"));
 const UserSchema = new mongoose_1.Schema({
@@ -29,7 +29,7 @@ const UserSchema = new mongoose_1.Schema({
     },
     status: {
         type: String,
-        default: 'offline',
+        default: "offline",
     },
     userName: {
         type: String,
@@ -59,7 +59,7 @@ const UserSchema = new mongoose_1.Schema({
     },
     userDetails: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'UserDetails',
+        ref: "UserDetails",
     },
 }, {
     timestamps: true,
@@ -75,30 +75,30 @@ UserSchema.statics.isUserExist = function (userName) {
             needsPasswordChange: 1,
             userDetails: 1,
             isVerified: 1,
-        }).populate('userDetails');
+        }).populate("userDetails");
     });
 };
 UserSchema.statics.isPasswordMatched = function (givenPassword, savedPassword) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield bcrypt_1.default.compare(givenPassword, savedPassword);
+        return yield bcryptjs_1.default.compare(givenPassword, savedPassword);
     });
 };
 UserSchema.methods.changedPasswordAfterJwtIssued = function (jwtTimestamp) {
-    console.log({ jwtTimestamp }, 'hi');
+    console.log({ jwtTimestamp }, "hi");
 };
 // User.create() / user.save()
-UserSchema.pre('save', function (next) {
+UserSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         // hashing user password
         const user = this;
-        user.password = yield bcrypt_1.default.hash(user.password, Number(config_1.default.bycrypt_salt_rounds));
+        user.password = yield bcryptjs_1.default.hash(user.password, Number(config_1.default.bycrypt_salt_rounds));
         if (!user.needsPasswordChange) {
             user.passwordChangedAt = new Date();
         }
         next();
     });
 });
-exports.User = (0, mongoose_1.model)('User', UserSchema);
+exports.User = (0, mongoose_1.model)("User", UserSchema);
 // interface IImage {
 //   name: string;
 //   image: {
