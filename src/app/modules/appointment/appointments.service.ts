@@ -97,6 +97,12 @@ const getAllAppointments = async (
   };
 };
 
+const getAllAppointmentsByUsername = async(username:string) => {
+  const result = await Appointment.find({ menteeUserName: username });
+
+  return result;
+}
+
 const updateAppointment = async (
   id: string,
   payload: Partial<IAppointment>
@@ -120,4 +126,5 @@ export const AppointmentService = {
   getSingleAppointment,
   updateAppointment,
   deleteAppointmentFromDB,
+  getAllAppointmentsByUsername
 };
